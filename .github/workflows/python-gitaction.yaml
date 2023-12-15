@@ -36,16 +36,15 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
 
 
-      - name: Run Django Migrations
-        run: python manage.py migrate
-        env:
-          SECRET_KEY: 'django-insecure-)6cv^nunnw2f864i*#i7g1la@%vshwx8k4z9^dt(fsy+_)e-b!'
-          JWT_SECRET_KEY: 'Lw5Syaog9lZb32MpP4G117_e1AXKCOZyrr9MtHj40Cs'
-          AWS_ACCESS_KEY_ID: 'AKIA3235CPNMLA462M5E'
-          AWS_SECRET_ACCESS_KEY: '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'
+      # - name: Run Django Migrations
+      #   run: python manage.py migrate
+      #   env:
+      #     SECRET_KEY: 'django-insecure-)6cv^nunnw2f864i*#i7g1la@%vshwx8k4z9^dt(fsy+_)e-b!'
+      #     JWT_SECRET_KEY: 'Lw5Syaog9lZb32MpP4G117_e1AXKCOZyrr9MtHj40Cs'
+      #     AWS_ACCESS_KEY_ID: 'AKIA3235CPNMLA462M5E'
+      #     AWS_SECRET_ACCESS_KEY: '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'
 
 
       - name: Build Docker Compose
@@ -54,9 +53,11 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
+          aws-access-key-id: 'AKIA3235CPNMLA462M5E'
+          aws-secret-access-key: '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'
+          aws-region: ap-northeast-2
           role-to-assume: arn:aws:iam::813621738328:role/jinttoRole
           role-session-name: jinttoRoleSessionName
-          aws-region: ap-northeast-2
 
 
       - name: Login to Amazon ECR
