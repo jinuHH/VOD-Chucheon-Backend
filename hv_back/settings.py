@@ -20,12 +20,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-)6cv^nunnw2f864i*#i7g1la@%vshwx8k4z9^dt(fsy+_)e-b!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+#배포 변경 추후 우리 도메인만 
 ALLOWED_HOSTS = ['*']
 
 
@@ -137,9 +139,8 @@ STATICFILES_DIRS = [
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://vod-recommendation-frontend.s3-website.ap-northeast-2.amazonaws.com",  # React 앱이 실행되는 주소
-    "https://front.jinttoteam.com"
+    "http://localhost:3000", 
+    "https://front.jinttoteam.com"  # React 앱이 실행되는 주소
 
 ]
 
@@ -158,11 +159,14 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
 
-# AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY}}
-# AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}
-# AWS_S3_REGION_NAME='ap-northeast-2'
-# AWS_S3_CUSTOM_DOMAIN='vod-recommendation-dataset.ap-northeast-2'
-# PROGRAM_OBJECT_KEY = 'preprocessed data/asset_nm.csv'
+# AWS S3 설정
+# git action 시크릿으로 넣어야될 것
+AWS_ACCESS_KEY_ID = 'AKIA3235CPNMLA462M5E'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'jintto-s3-backend'
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+AWS_S3_REGION = 'ap-northeast-2'
+
 
 LOGGING = {
     'version': 1,
