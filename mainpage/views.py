@@ -153,6 +153,27 @@ class RecommendationView_1(View):
             return JsonResponse({'error': 'Internal Server Error'}, status=500)
 
 @method_decorator(csrf_exempt, name='dispatch')
+<<<<<<< HEAD
+=======
+class RecommendationView_1(View):
+    def post(self, request):
+        try:
+            server_time = get_server_time()
+            print(f'server_time, {server_time}')
+            top_assets = get_assets_by_time(server_time)
+            print(f'top_assets, {top_assets}')
+            selected_programs = get_programs_by_assets(top_assets)
+            result_data = selected_programs.apply(lambda x: x.map(convert_none_to_null_1)).to_dict('records')
+            print(f'result_data, {result_data}')
+            print('추천1 실행 완료')
+            return JsonResponse({'data': result_data}, content_type='application/json')
+
+        except Exception as e:
+            logging.exception(f"Error in RecommendationView: {e}")
+            return JsonResponse({'error': 'Internal Server Error'}, status=500)
+
+@method_decorator(csrf_exempt, name='dispatch')
+>>>>>>> abb38853fdf359349578cbef078aca331d8d52eb
 class RecommendationView_2(View):
     def post(self, request):
         try:
@@ -323,4 +344,10 @@ class ProcessButtonClickView(View):
             return JsonResponse({'error': 'Internal Server Error'}, status=500)
         finally:
             if JsonResponse:
+<<<<<<< HEAD
                 log_user_action(subsr, request, JsonResponse)  # 여기에 사용자 아이디를 전달합니다.
+=======
+                log_user_action(subsr, request, JsonResponse)  # 여기에 사용자 아이디를 전달합니다.
+        
+
+>>>>>>> abb38853fdf359349578cbef078aca331d8d52eb

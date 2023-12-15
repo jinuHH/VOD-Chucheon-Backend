@@ -167,7 +167,10 @@ AWS_STORAGE_BUCKET_NAME = 'jintto-s3-backend'
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 AWS_S3_REGION = 'ap-northeast-2'
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> abb38853fdf359349578cbef078aca331d8d52eb
 
 LOGGING = {
     'version': 1,
