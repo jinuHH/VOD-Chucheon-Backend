@@ -159,19 +159,6 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
 
-# AWS S3 설정
-# git action 시크릿으로 넣어야될 것
-AWS_ACCESS_KEY_ID = 'AKIA3235CPNMLA462M5E'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'jintto-s3-backend'
-AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
-AWS_S3_REGION = 'ap-northeast-2'
-
-<<<<<<< HEAD
-
-=======
->>>>>>> abb38853fdf359349578cbef078aca331d8d52eb
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
