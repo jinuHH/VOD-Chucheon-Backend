@@ -53,10 +53,9 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: 'AKIA3235CPNMLA462M5E'
-          aws-secret-access-key: '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'
+  
           aws-region: ap-northeast-2
-          role-to-assume: arn:aws:iam::813621738328:role/jinttoRole
+          role-to-assume: arn:aws:iam::813621738328:policy/jinttobackECR_imagePush
           role-session-name: jinttoRoleSessionName
 
 
