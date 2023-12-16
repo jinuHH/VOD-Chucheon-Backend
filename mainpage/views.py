@@ -19,6 +19,47 @@ from surprise import Dataset, Reader
 from surprise.model_selection import train_test_split
 from surprise import BaselineOnly
 from surprise import accuracy
+from hv_back import settings
+
+
+# AWS 자격 증명 관리를 위한 세팅
+AWS_ACCESS_KEY = settings.AWS_ACCESS_KEY_ID
+AWS_SECRET_KEY = settings.AWS_SECRET_ACCESS_KEY
+AWS_S3_REGION = settings.AWS_S3_REGION
+
+# S3 버킷 및 객체 키 설정
+S3_BUCKET_NAME = settings.AWS_STORAGE_BUCKET_NAME
+ASSET_OBJECT_KEY = 'data/asset_df.csv'
+TIME_VIEW_OBJECT_KEY = 'data/time_view_df.csv'
+SUBSR_MAX_OBJECT_KEY = 'data/subsr_max_genre.csv'
+VOD_OBJECT_KEY = "data/vod_df.csv"
+CONTENT_SIM_OJECT_KEY = "data/contents_sim.csv"
+MODEL_KEY = "model"
+
+
+def read_data_from_s3(bucket_name, object_key):
+    try:
+        s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY, region_name=AWS_S3_REGION)
+        obj = s3.get_object(Bucket=bucket_name, Key=object_key)
+        data = obj['Body'].read().decode('euc-kr')
+        df = pd.read_csv(StringIO(data))
+
+    except NoCredentialsError as e:
+        print('AWS credentials not available')
+        raise e
+    except Exception as e:
+        print(f'Error reading data from S3: {e}')
+        raise e
+
+    return df
+
+def load_recommendation_model_from_s3(bucket_name, model_key):
+    s3 = boto3.client('s3',  aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY, region_name=AWS_S3_REGION)
+    response = s3.get_object(Bucket=bucket_name, Key=model_key)
+    model_str = response['Body'].read()
+    model = pickle.loads(model_str)
+    return model
+
 
 
 # recommendation_1 : 시간대 인기차트 프로그램명이 저장된 데이터를 부르는 함수    
@@ -155,11 +196,14 @@ class RecommendationView_3(View):
             three_months_ago_month = three_months_ago.strftime('%m')
         
             model_filename = f'baseline_model_{four_months_ago_month}{three_months_ago_month}'
-            recommendation_model = load_recommendation_model(model_filename)
+            MODEL_FINAL_KEY = f'{MODEL_KEY}/{model_filename}'
+            print('---------------------------------------------')
+            print(MODEL_FINAL_KEY)
+            recommendation_model = load_recommendation_model_from_s3(S3_BUCKET_NAME, MODEL_FINAL_KEY)
             if recommendation_model is None:
                 return JsonResponse({'error': 'Failed to load the recommendation model'}, status=500)
-            vod_df=read_data_from_local('vod_df.csv')
-            asset_df=read_data_from_local('asset_df.csv')
+            vod_df=read_data_from_s3(S3_BUCKET_NAME, VOD_OBJECT_KEY)
+            asset_df=read_data_from_s3(S3_BUCKET_NAME, ASSET_OBJECT_KEY)
             programs = get_user_recommendations(subsr=subsr, vod_df=vod_df, asset_df=asset_df, model=recommendation_model)
             if programs.empty:
                 return JsonResponse({'error': 'No programs available'}, status=404)
