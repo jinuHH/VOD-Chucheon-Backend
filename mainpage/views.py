@@ -64,7 +64,7 @@ def load_recommendation_model_from_s3(bucket_name, model_key):
 
 # recommendation_1 : 시간대 인기차트 프로그램명이 저장된 데이터를 부르는 함수    
 def get_assets_by_time(server_time):
-    time_view_df = pd.read_csv('static/time_view_df.csv',encoding='euc-kr')
+    time_view_df = read_data_from_s3(S3_BUCKET_NAME,TIME_VIEW_OBJECT_KEY)
     server_hour = server_time.hour
     selected_data = time_view_df[time_view_df['time_range'] == server_hour]['top_asset']
     top_assets_list = selected_data.iloc[0].split(', ')
@@ -72,7 +72,7 @@ def get_assets_by_time(server_time):
 
 # recommendation_1 : 실시간 인기 프로그램의 프로그램 정보만을 모아서 return하는 함수
 def get_programs_by_assets(top_assets):
-    asset_df = pd.read_csv('static/asset_df.csv', encoding='euc-kr')
+    asset_df = read_data_from_s3(S3_BUCKET_NAME,ASSET_OBJECT_KEY)
     try:
         selected_programs = asset_df[asset_df['asset_nm'].isin(top_assets)]
         selected_programs = selected_programs.where(pd.notna(selected_programs), None)
@@ -85,7 +85,7 @@ def get_programs_by_assets(top_assets):
 
 # recommendation_2 : 장르기반 프로그램 뽑는 함수
 def get_programs_by_genre(genre):
-    program_data = read_data_from_local('asset_df.csv')
+    program_data = read_data_from_s3(S3_BUCKET_NAME, ASSET_OBJECT_KEY)
     genre_programs = program_data[program_data['category_l'] == genre]
     genre_programs = genre_programs.where(pd.notna(genre_programs), None)
     programs = genre_programs.to_dict('records')
@@ -94,7 +94,7 @@ def get_programs_by_genre(genre):
 
 # recommendation_2 : 사용자 장르 찾는 함수
 def get_most_watched_genre(subsr):
-    subsr_data = read_data_from_local('subsr_max_genre.csv')
+    subsr_data = read_data_from_s3(S3_BUCKET_NAME, SUBSR_MAX_OBJECT_KEY)
     print(f"subsr_data: {subsr_data}")
     try:
         subsr_genre = subsr_data.loc[subsr_data['subsr'].astype(str) == str(subsr), 'top_genres'].iloc[0]
@@ -106,7 +106,7 @@ def get_most_watched_genre(subsr):
 
 # recommendation_2 : 예외처리를 위한 랜덤 뽑아주기
 def get_random_programs(num_programs):
-    program_data = read_data_from_local('asset_df.csv')
+    program_data =  read_data_from_s3(S3_BUCKET_NAME, ASSET_OBJECT_KEY)
     try:
         if not program_data.empty:
             selected_programs = program_data.sample(min(num_programs, len(program_data)))
