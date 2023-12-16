@@ -8,12 +8,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 import logging
 import json
-import ast
 from hv_back.utils import get_server_time
 from hv_back.utils import load_recommendation_model
 from hv_back.utils import convert_none_to_null_1
 from hv_back.utils import convert_none_to_null
 from hv_back.utils import read_data_from_local
+from hv_back.utils import log_user_action
 from django.utils import timezone
 from surprise import Dataset, Reader
 from surprise.model_selection import train_test_split
@@ -21,6 +21,10 @@ from surprise import BaselineOnly
 from surprise import accuracy
 from hv_back import settings
 from django.conf import settings
+import boto3
+from io import StringIO
+import pickle
+import ast
 
 # AWS 자격 증명 관리를 위한 세팅
 AWS_ACCESS_KEY = settings.AWS_ACCESS_KEY_ID
@@ -228,7 +232,7 @@ class RecommendationView_4(View):
             if not subsr:
                 return JsonResponse({'error': 'subsr is required'}, status=400)
             
-            vod_log = read_data_from_local('vod_df.csv')
+            vod_log = read_data_from_s3(S3_BUCKET_NAME, VOD_OBJECT_KEY)
             print(vod_log.head(1))
             vod_log = vod_log[vod_log['subsr'].astype(str) == str(subsr)]
             if vod_log.empty:
@@ -237,12 +241,12 @@ class RecommendationView_4(View):
             vod_log['datetime'] = pd.to_datetime(vod_log['date'] + ' ' + vod_log['time'])
             asset_nm = vod_log.loc[vod_log['datetime'].idxmax(), 'asset_nm']
             
-            cos_sim = read_data_from_local('contents_sim.csv')
+            cos_sim = read_data_from_s3(S3_BUCKET_NAME, CONTENT_SIM_OJECT_KEY)
             if cos_sim is not None:
                 print(f"cos_sim not none!")
                 programs_str = cos_sim[cos_sim['asset_nm'] == asset_nm]['similar_assets'].iloc[0]
                 programs = ast.literal_eval(programs_str) if programs_str else []
-                asset_df = read_data_from_local('asset_df.csv')
+                asset_df = read_data_from_s3(S3_BUCKET_NAME, ASSET_OBJECT_KEY)
                 asset_data = asset_df[asset_df['asset_nm'].isin(programs)]
                 selected_programs = asset_data.to_dict(orient='records')
             else:

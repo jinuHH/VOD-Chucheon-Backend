@@ -8,5 +8,5 @@ class CoreConfig(AppConfig):
     def ready(self):
         # if not settings.DEBUG:  # 개발 환경이 아닐 때만 스케줄러를 실행합니다.
             scheduler = BackgroundScheduler()
-            scheduler.add_job(move_log_to_archive, 'cron', hour=12, minute=00)
+            scheduler.add_job(move_log_to_archive, 'cron', hour=18, minute=18)
             scheduler.start()
