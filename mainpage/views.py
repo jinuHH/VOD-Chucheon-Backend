@@ -220,12 +220,13 @@ class SearchVeiw(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
+            subsr = data.get('subsr', None)
             program_to_search = data.get('programName', None) 
             print(f"program_to_search:", {program_to_search})
             if not program_to_search:
                 return JsonResponse({'error': 'program_to_search is missing'}, status=400)
             try:
-                asset_df = read_data_from_local('asset_df.csv')
+                asset_df = read_data_from_s3(S3_BUCKET_NAME, ASSET_OBJECT_KEY)
             except Exception as e:
                 logging.exception(f"Error reading data from local file: {e}")
                 return JsonResponse({'error': 'Failed to read data file'}, status=500)
@@ -240,31 +241,41 @@ class SearchVeiw(View):
         except Exception as e:
             logging.exception(f"Error in ProcessButtonClickView: {e}")
             return JsonResponse({'error': 'Internal Server Error'}, status=500)
-
+        finally:
+            if JsonResponse:
+                log_user_action(subsr, request, JsonResponse)  # 여기에 사용자 아이디를 전달합니다.
 
 @method_decorator(csrf_exempt, name='dispatch')  
 class ProcessButtonClickView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
+            subsr = data.get('subsr', None)
             button_text = data.get('button_text')
             print(f"button_text: {button_text}")
             if not button_text:
                 return JsonResponse({'error': 'Button text is missing'}, status=400)
             try:
-                asset_df = read_data_from_local('asset_df.csv')
+                asset_df = read_data_from_s3(S3_BUCKET_NAME, ASSET_OBJECT_KEY)
             except Exception as e:
                 logging.exception(f"Error reading data from local file: {e}")
                 return JsonResponse({'error': 'Failed to read data file'}, status=500)
             try:
                 selected_data = asset_df[asset_df['category_h'] == button_text]
+                result_data = selected_data.where(pd.notna(selected_data), None).applymap(convert_none_to_null_1).to_dict('records')
+                print("결과 데이터 개수", len(result_data))
+                print("결과 데이터 타입", type(result_data))
+                return JsonResponse({'data': result_data})
             except KeyError:
                 return JsonResponse({'error': 'Invalid filtering condition'}, status=400)
-            result_data = selected_data.where(pd.notna(selected_data), None).applymap(convert_none_to_null_1).to_dict('records')
-
-            return JsonResponse({'data': result_data})
+            #result_data = selected_data.where(pd.notna(selected_data), None).applymap(convert_none_to_null_1).to_dict('records')
+    
+            #return JsonResponse({'data': result_data})
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON data'}, status=400)
         except Exception as e:
             logging.exception(f"Error in ProcessButtonClickView: {e}")
             return JsonResponse({'error': 'Internal Server Error'}, status=500)
+        finally:
+            if JsonResponse:
+                log_user_action(subsr, request, JsonResponse)  # 여기에 사용자 아이디를 전달합니다.

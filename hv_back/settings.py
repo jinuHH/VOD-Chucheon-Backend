@@ -175,3 +175,10 @@ LOGGING = {
 
 MEDIA_ROOT = BASE_DIR/"media"
 MEDIA_URL = "/media/"
+
+AWS_ACCESS_KEY_ID = 'AKIA3235CPNMLA462M5E'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'jintto-s3-backend'
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+AWS_S3_REGION = 'ap-northeast-2'
+PROGRAM_OBJECT_KEY = 'data/asset_df.csv'
