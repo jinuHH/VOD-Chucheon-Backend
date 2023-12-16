@@ -20,7 +20,7 @@ from surprise.model_selection import train_test_split
 from surprise import BaselineOnly
 from surprise import accuracy
 from hv_back import settings
-
+from django.conf import settings
 
 # AWS 자격 증명 관리를 위한 세팅
 AWS_ACCESS_KEY = settings.AWS_ACCESS_KEY_ID
@@ -196,7 +196,7 @@ class RecommendationView_3(View):
             three_months_ago_month = three_months_ago.strftime('%m')
         
             model_filename = f'baseline_model_{four_months_ago_month}{three_months_ago_month}'
-            MODEL_FINAL_KEY = f'{MODEL_KEY}/{model_filename}'
+            MODEL_FINAL_KEY = f'{MODEL_KEY}/{model_filename}.pkl'
             print('---------------------------------------------')
             print(MODEL_FINAL_KEY)
             recommendation_model = load_recommendation_model_from_s3(S3_BUCKET_NAME, MODEL_FINAL_KEY)

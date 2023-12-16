@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
+    'core',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -129,19 +131,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-# 정적 파일을 서빙할 URL(prefix) 설정
-STATIC_URL = '/static/'
-import os
-# 정적 파일이 위치한 디렉토리 설정
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000", 
     "https://front.jinttoteam.com"  # React 앱이 실행되는 주소
-
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -179,6 +174,18 @@ MEDIA_URL = "/media/"
 AWS_ACCESS_KEY_ID = 'AKIA3235CPNMLA462M5E'
 AWS_SECRET_ACCESS_KEY = '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'
 AWS_STORAGE_BUCKET_NAME = 'jintto-s3-backend'
-AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+# AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 AWS_S3_REGION = 'ap-northeast-2'
-PROGRAM_OBJECT_KEY = 'data/asset_df.csv'
+# PROGRAM_OBJECT_KEY = 'data/asset_df.csv'
+
+# # 정적 파일을 서빙할 URL(prefix) 설정
+STATIC_URL = '/static/'
+import os
+# 정적 파일이 위치한 디렉토리 설정
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+# 정적 파일 설정
+# STATIC_LOCATION = 'jintto-s3-backend'
+# STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
+# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
