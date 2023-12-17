@@ -66,13 +66,36 @@ def load_recommendation_model_from_s3(bucket_name, model_key):
 
 
 
-# recommendation_1 : 시간대 인기차트 프로그램명이 저장된 데이터를 부르는 함수    
-def get_assets_by_time(server_time):
-    time_view_df = read_data_from_s3(S3_BUCKET_NAME,TIME_VIEW_OBJECT_KEY)
-    server_hour = server_time.hour
-    selected_data = time_view_df[time_view_df['time_range'] == server_hour]['top_asset']
+# # recommendation_1 : 시간대 인기차트 프로그램명이 저장된 데이터를 부르는 함수    
+# def get_assets_by_time(server_time):
+#     time_view_df = read_data_from_s3(S3_BUCKET_NAME,TIME_VIEW_OBJECT_KEY)
+#     server_hour = server_time.hour
+#     selected_data = time_view_df[time_view_df['time_range'] == server_hour]['top_asset']
+#     top_assets_list = selected_data.iloc[0].split(', ')
+#     return top_assets_list
+
+def get_assets_by_time(server_time, hashtag=None):
+    time_view_df = read_data_from_s3(S3_BUCKET_NAME, TIME_VIEW_OBJECT_KEY)
+    
+    if hashtag is None or hashtag == 1:
+        server_hour = server_time.hour
+        selected_data = time_view_df[time_view_df['time_range'] == server_hour]['top_asset']
+    elif hashtag == 2:
+        selected_data = time_view_df[time_view_df['time_range'] == 25]['top_asset']
+    elif hashtag == 3:
+        selected_data = time_view_df[time_view_df['time_range'] == 26]['top_asset']
+    elif hashtag == 4:
+        selected_data = time_view_df[time_view_df['time_range'] == 27]['top_asset']
+    else:
+        raise ValueError("Invalid hashtag value")
+    
+    if selected_data.empty:
+        return []
+    
     top_assets_list = selected_data.iloc[0].split(', ')
     return top_assets_list
+
+
 
 # recommendation_1 : 실시간 인기 프로그램의 프로그램 정보만을 모아서 return하는 함수
 def get_programs_by_assets(top_assets):
@@ -137,13 +160,33 @@ def get_user_recommendations(subsr, vod_df, asset_df, model, top_n=20):
     return subsr_recommendations
 
 
+# @method_decorator(csrf_exempt, name='dispatch')
+# class RecommendationView_1(View):
+#     def post(self, request):
+#         try:
+#             server_time = get_server_time()
+#             print(f'server_time, {server_time}')
+#             top_assets = get_assets_by_time(server_time)
+#             print(f'top_assets, {top_assets}')
+#             selected_programs = get_programs_by_assets(top_assets)
+#             result_data = selected_programs.apply(lambda x: x.map(convert_none_to_null_1)).to_dict('records')
+#             print(f'result_data, {result_data}')
+#             return JsonResponse({'data': result_data}, content_type='application/json')
+
+#         except Exception as e:
+#             logging.exception(f"Error in RecommendationView: {e}")
+#             return JsonResponse({'error': 'Internal Server Error'}, status=500)
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 class RecommendationView_1(View):
     def post(self, request):
         try:
+            data = json.loads(request.body)
+            hashtag = data.get('hashtag', None)  # 'hashtag' 키가 없으면 None을 반환합니다.
             server_time = get_server_time()
             print(f'server_time, {server_time}')
-            top_assets = get_assets_by_time(server_time)
+            top_assets = get_assets_by_time(server_time, hashtag)
             print(f'top_assets, {top_assets}')
             selected_programs = get_programs_by_assets(top_assets)
             result_data = selected_programs.apply(lambda x: x.map(convert_none_to_null_1)).to_dict('records')
