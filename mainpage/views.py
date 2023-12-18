@@ -183,8 +183,11 @@ def get_user_recommendations(subsr, vod_df, asset_df, model, top_n=20):
 @method_decorator(csrf_exempt, name='dispatch')
 class RecommendationView_1(View):
     def post(self, request):
+        print("Request received_reco1_success?")
         try:
+            print(f"Reco1 : Request body: {request.body}")
             data = json.loads(request.body)
+            print(f"Reco1 : Parsed data: {data}")
             hashtag = data.get('hashtag', None)  # 'hashtag' 키가 없으면 None을 반환합니다.
             print(f"Received hashtag: {hashtag}, type: {type(hashtag)}")  # hashtag 값과 타입 출력
             server_time = get_server_time()
@@ -195,7 +198,6 @@ class RecommendationView_1(View):
             result_data = selected_programs.apply(lambda x: x.map(convert_none_to_null_1)).to_dict('records')
             # print(f'result_data, {result_data}')
             return JsonResponse({'data': result_data}, content_type='application/json')
-
         except Exception as e:
             logging.exception(f"Error in RecommendationView: {e}")
             return JsonResponse({'error': 'Internal Server Error'}, status=500)
