@@ -25,6 +25,7 @@ import boto3
 from io import StringIO
 import pickle
 import ast
+from django.views.decorators.cache import never_cache
 
 # AWS 자격 증명 관리를 위한 세팅
 AWS_ACCESS_KEY = settings.AWS_ACCESS_KEY_ID
@@ -181,6 +182,7 @@ def get_user_recommendations(subsr, vod_df, asset_df, model, top_n=20):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+@never_cache
 class RecommendationView_1(View):
     def post(self, request):
         print("Request received_reco1_success?")
