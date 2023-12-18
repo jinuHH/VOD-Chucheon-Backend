@@ -76,7 +76,9 @@ def load_recommendation_model_from_s3(bucket_name, model_key):
 
 def get_assets_by_time(server_time, hashtag=None):
     time_view_df = read_data_from_s3(S3_BUCKET_NAME, TIME_VIEW_OBJECT_KEY)
-    
+
+    hashtag = int(hashtag) if hashtag is not None else hashtag
+
     if hashtag is None or hashtag == 1:
         server_hour = server_time.hour
         selected_data = time_view_df[time_view_df['time_range'] == server_hour]['top_asset']
