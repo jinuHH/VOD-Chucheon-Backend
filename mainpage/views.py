@@ -26,6 +26,7 @@ from io import StringIO
 import pickle
 import ast
 from django.views.decorators.cache import never_cache
+from corsheaders.decorators import cors_allow_all
 
 # AWS 자격 증명 관리를 위한 세팅
 AWS_ACCESS_KEY = settings.AWS_ACCESS_KEY_ID
@@ -183,6 +184,7 @@ def get_user_recommendations(subsr, vod_df, asset_df, model, top_n=20):
 
 @method_decorator(csrf_exempt, name='dispatch')
 @never_cache
+@cors_allow_all
 class RecommendationView_1(View):
     def post(self, request):
         print("Request received_reco1_success?")
@@ -199,7 +201,11 @@ class RecommendationView_1(View):
             selected_programs = get_programs_by_assets(top_assets)
             result_data = selected_programs.apply(lambda x: x.map(convert_none_to_null_1)).to_dict('records')
             # print(f'result_data, {result_data}')
-            return JsonResponse({'data': result_data}, content_type='application/json')
+            response = JsonResponse({'data': result_data}, content_type='application/json')
+            response["Access-Control-Allow-Origin"] = "https://front.jinttoteam.com"
+            response["Access-Control-Allow-Credentials"] = "true"
+            return response
+
         except Exception as e:
             logging.exception(f"Error in RecommendationView: {e}")
             return JsonResponse({'error': 'Internal Server Error'}, status=500)
