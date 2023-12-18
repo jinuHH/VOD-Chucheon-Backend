@@ -78,7 +78,7 @@ def get_assets_by_time(server_time, hashtag=None):
     time_view_df = read_data_from_s3(S3_BUCKET_NAME, TIME_VIEW_OBJECT_KEY)
 
     hashtag = int(hashtag) if hashtag is not None else hashtag
-
+    print(f"Received hashtag: {hashtag}, type: {type(hashtag)}")  # hashtag 값과 타입 출력
     if hashtag is None or hashtag == 1:
         server_hour = server_time.hour
         selected_data = time_view_df[time_view_df['time_range'] == server_hour]['top_asset']
@@ -186,13 +186,14 @@ class RecommendationView_1(View):
         try:
             data = json.loads(request.body)
             hashtag = data.get('hashtag', None)  # 'hashtag' 키가 없으면 None을 반환합니다.
+            print(f"Received hashtag: {hashtag}, type: {type(hashtag)}")  # hashtag 값과 타입 출력
             server_time = get_server_time()
-            print(f'server_time, {server_time}')
+            # print(f'server_time, {server_time}')
             top_assets = get_assets_by_time(server_time, hashtag)
             print(f'top_assets, {top_assets}')
             selected_programs = get_programs_by_assets(top_assets)
             result_data = selected_programs.apply(lambda x: x.map(convert_none_to_null_1)).to_dict('records')
-            print(f'result_data, {result_data}')
+            # print(f'result_data, {result_data}')
             return JsonResponse({'data': result_data}, content_type='application/json')
 
         except Exception as e:
