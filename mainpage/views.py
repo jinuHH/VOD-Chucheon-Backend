@@ -184,32 +184,32 @@ def get_user_recommendations(subsr, vod_df, asset_df, model, top_n=20):
 #             return JsonResponse({'error': 'Internal Server Error'}, status=500)
 
 
-    @method_decorator(csrf_exempt, name='dispatch')
-    @never_cache
-    @cors_allow_all
-    class RecommendationView_1(View):
-        def post(self, request):
-            logger.debug(f"Request body: {request.body}")
-            print("Request received_reco1_success?")
-            try:
-                print(f"Reco1 : Request body: {request.body}")
-                data = json.loads(request.body)
-                print(f"Reco1 : Parsed data: {data}")
-                hashtag = data.get('hashtag', None)  # 'hashtag' 키가 없으면 None을 반환합니다.
-                print(f"Received hashtag: {hashtag}, type: {type(hashtag)}")  # hashtag 값과 타입 출력
-                server_time = get_server_time()
-                # print(f'server_time, {server_time}')
-                top_assets = get_assets_by_time(server_time, hashtag)
-                print(f'top_assets, {top_assets}')
-                selected_programs = get_programs_by_assets(top_assets)
-                result_data = selected_programs.apply(lambda x: x.map(convert_none_to_null_1)).to_dict('records')
-                # print(f'result_data, {result_data}')
-                return JsonResponse({'data': result_data}, content_type='application/json')
-            except json.JSONDecodeError:
-                return JsonResponse({'error': 'Invalid JSON format'}, status=400)
-            except Exception as e:
-                logging.exception(f"Error in RecommendationView: {e}")
-                return JsonResponse({'error': 'Internal Server Error'}, status=500)
+@method_decorator(csrf_exempt, name='dispatch')
+@never_cache
+@cors_allow_all
+class RecommendationView_1(View):
+    def post(self, request):
+        logger.debug(f"Request body: {request.body}")
+        print("Request received_reco1_success?")
+        try:
+            print(f"Reco1 : Request body: {request.body}")
+            data = json.loads(request.body)
+            print(f"Reco1 : Parsed data: {data}")
+            hashtag = data.get('hashtag', None)  # 'hashtag' 키가 없으면 None을 반환합니다.
+            print(f"Received hashtag: {hashtag}, type: {type(hashtag)}")  # hashtag 값과 타입 출력
+            server_time = get_server_time()
+            # print(f'server_time, {server_time}')
+            top_assets = get_assets_by_time(server_time, hashtag)
+            print(f'top_assets, {top_assets}')
+            selected_programs = get_programs_by_assets(top_assets)
+            result_data = selected_programs.apply(lambda x: x.map(convert_none_to_null_1)).to_dict('records')
+            # print(f'result_data, {result_data}')
+            return JsonResponse({'data': result_data}, content_type='application/json')
+        except ValueError as ve:
+            return JsonResponse({'error': str(ve)}, status=400)
+        except Exception as e:
+            logging.exception(f"Error in RecommendationView: {e}")
+            return JsonResponse({'error': 'Internal Server Error'}, status=500)
 
 @method_decorator(csrf_exempt, name='dispatch')
 class RecommendationView_2(View):
