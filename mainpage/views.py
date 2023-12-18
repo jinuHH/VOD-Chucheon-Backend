@@ -204,11 +204,9 @@ class RecommendationView_1(View):
             selected_programs = get_programs_by_assets(top_assets)
             result_data = selected_programs.apply(lambda x: x.map(convert_none_to_null_1)).to_dict('records')
             # print(f'result_data, {result_data}')
-            response = JsonResponse({'data': result_data}, content_type='application/json')
-            response["Access-Control-Allow-Origin"] = "https://front.jinttoteam.com"
-            response["Access-Control-Allow-Credentials"] = "true"
-            return response
-
+            return JsonResponse({'data': result_data}, content_type='application/json')
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
         except Exception as e:
             logging.exception(f"Error in RecommendationView: {e}")
             return JsonResponse({'error': 'Internal Server Error'}, status=500)
