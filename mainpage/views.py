@@ -192,19 +192,28 @@ class RecommendationView_1(View):
         logger.debug(f"Request body: {request.body}")
         print("Request received_reco1_success?")
         try:
+            # print(f"Reco1 : Request body: {request.body}")
+            # data = json.loads(request.body)
+            # print(f"Reco1 : Parsed data: {data}")
+            # hashtag = data.get('hashtag', None)  # 'hashtag' 키가 없으면 None을 반환합니다.
+            # print(f"Received hashtag: {hashtag}, type: {type(hashtag)}")  # hashtag 값과 타입 출력
+            # server_time = get_server_time()
+            # # print(f'server_time, {server_time}')
+            # top_assets = get_assets_by_time(server_time, hashtag)
+            # print(f'top_assets, {top_assets}')
+            # selected_programs = get_programs_by_assets(top_assets)
+            # result_data = selected_programs.apply(lambda x: x.map(convert_none_to_null_1)).to_dict('records')
+            # # print(f'result_data, {result_data}')
+            # return JsonResponse({'data': result_data}, content_type='application/json')
+            # 클라이언트로부터 받은 데이터를 로그로 출력
             print(f"Reco1 : Request body: {request.body}")
+
+            # 받은 데이터를 JSON 형식으로 파싱
             data = json.loads(request.body)
             print(f"Reco1 : Parsed data: {data}")
-            hashtag = data.get('hashtag', None)  # 'hashtag' 키가 없으면 None을 반환합니다.
-            print(f"Received hashtag: {hashtag}, type: {type(hashtag)}")  # hashtag 값과 타입 출력
-            server_time = get_server_time()
-            # print(f'server_time, {server_time}')
-            top_assets = get_assets_by_time(server_time, hashtag)
-            print(f'top_assets, {top_assets}')
-            selected_programs = get_programs_by_assets(top_assets)
-            result_data = selected_programs.apply(lambda x: x.map(convert_none_to_null_1)).to_dict('records')
-            # print(f'result_data, {result_data}')
-            return JsonResponse({'data': result_data}, content_type='application/json')
+
+            # 클라이언트로부터 받은 데이터를 그대로 JsonResponse로 반환
+            return JsonResponse({'data': data}, content_type='application/json')
         except ValueError as ve:
             return JsonResponse({'error': str(ve)}, status=400)
         except Exception as e:
