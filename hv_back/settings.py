@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-)6cv^nunnw2f864i*#i7g1la@%vshwx8k4z9^dt(fsy+_)e-b!
 DEBUG = True
 
 #배포 변경 추후 우리 도메인만 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['https://main.jinttoteam.com']
 
 
 # Application definition
@@ -135,7 +135,6 @@ USE_TZ = True
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000", 
     "https://front.jinttoteam.com"  # React 앱이 실행되는 주소
 ]
 
